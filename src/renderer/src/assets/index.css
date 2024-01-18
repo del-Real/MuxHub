@@ -57,10 +57,13 @@ a:hover {
   display: flex;
   flex-direction: row;
   margin: 0 auto;
-  padding: 7px;
+  padding: 6px;
   justify-content: space-between;
-  gap: 7px;
+  gap: 6px;
+  height: 99vh;
 }
+
+/* --- LEFT PANEL --- */
 
 .left-panel{
   flex: 0 0 15%;
@@ -68,11 +71,19 @@ a:hover {
   border-radius: 20px;
 }
 
+/* --- MAIN PANEL --- */
+
 .main-panel{
   flex: 1 1 auto;
   background-color: #2d2d2d;
   border-radius: 20px;
 }
+
+.viewport{
+  height: 100%;
+}
+
+/* --- RIGHT PANEL --- */
 
 .right-panel{
   flex: 0 0 15%;
@@ -80,11 +91,7 @@ a:hover {
   border-radius: 20px;
 }
 
-.hero-logo {
-  margin-top: -0.4rem;
-  transition: all 0.3s;
-}
-
+/* --- RESPONSIVE --- */
 
 @media (max-width: 840px) {
 

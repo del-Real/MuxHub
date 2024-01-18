@@ -1,10 +1,10 @@
 {
   "name": "muxhub",
   "version": "1.0.0",
-  "description": "Digital Logic Simulator. GraphNode-based. Built with Electron & React",
+  "description": "Digital logic simulator graphNode-based built with Electron & React ",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://www.electronjs.org",
+  "author": "Alberto del Real",
+  "homepage": "https://www.delreal.dev",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
