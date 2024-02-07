@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { Handle, Position } from 'reactflow'
-
-const handleStyle = { left: 10 }
+import NOT_ANSI from './NOT_ANSI.svg'
 
 function NOT_gate() {
   const onChange = useCallback((evt) => {
@@ -10,13 +9,20 @@ function NOT_gate() {
 
   return (
     <>
-      <Handle type="target" position={Position.Top} />
-      <div>
-        <label htmlFor="text">Text:</label>
-        <input id="text" name="text" onChange={onChange} className="nodrag" />
+      <div
+        style={{
+          background: '#fff',
+          padding: 10,
+          borderRadius: 5,
+          border: '1px solid #ccc',
+          width: 50,
+          height: 25
+        }}
+      >
+        <img src={NOT_ANSI} style={{ width: '100%', height: 'auto' }} />
       </div>
-      <Handle type="source" position={Position.Bottom} id="a" />
-      <Handle type="source" position={Position.Bottom} id="b" style={handleStyle} />
+      <Handle type="source" position={Position.Left} id="a" />
+      <Handle type="source" position={Position.Right} id="b" />
     </>
   )
 }
