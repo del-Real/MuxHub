@@ -49,20 +49,21 @@ int CreateNode(float value, ImVec2 pos) {
     return id;
 }
 
-// static std::unordered_map<int, NotGate> gates;
-//
-// int CreateGate(ImVec2 pos) {
-//     int id = next_node_id++;
-//     NotGate &notGat = gates[id];
-//     notGat.setIdGate(id);
-//     notGat.setPos(pos);
-//
-//     // Create input/output attributes
-//     notGat.inputs.push_back(next_attr_id++);
-//     notGat.outputs.push_back(next_attr_id++);
-//
-//     return id;
-// }
+static std::unordered_map<int, NotGate> gates;
+
+int CreateGate(ImVec2 pos) {
+    int id = next_node_id++;
+    NotGate &notGat = gates[id];
+    notGat.setIdGate(id);
+    notGat.setPos(pos);
+    notGat.setLabel("ss");
+
+    // Create input/output attributes
+    notGat.addInput(next_attr_id++);
+    // notGat.outputs.push_back(next_attr_id++);
+
+    return id;
+}
 
 void ShowNodeEditor() {
     // Begin node editor
@@ -77,7 +78,8 @@ void ShowNodeEditor() {
     if (ImGui::BeginPopup("NodesContextMenu")) {
         ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
         if (ImGui::MenuItem("Add Node")) {
-            CreateNode(0.0f, click_pos);
+            // CreateNode(0.0f, click_pos);
+            CreateGate(click_pos);
         }
         ImGui::EndPopup();
     }
@@ -110,6 +112,32 @@ void ShowNodeEditor() {
 
         // Output attribute
         ImNodes::BeginOutputAttribute(node.outputs[0]);
+        ImGui::Text("Output");
+        ImNodes::EndOutputAttribute();
+
+        ImNodes::EndNode();
+    }
+
+    for (auto &gate_pair : gates) {
+        NotGate &gate = gate_pair.second;
+
+        // Set node position if it's a new node
+        ImNodes::SetNodeScreenSpacePos(gate.getIdGate(), gate.getPos());
+
+        // Begin rendering the node
+        ImNodes::BeginNode(gate.getIdGate());
+
+        ImNodes::BeginNodeTitleBar();
+        ImGui::TextUnformatted("Gate");
+        ImNodes::EndNodeTitleBar();
+
+        // Input attribute
+        ImNodes::BeginInputAttribute(gate.getInputs()[0]);
+        ImGui::Text("Input");
+        ImNodes::EndInputAttribute();
+
+        // Output attribute
+        ImNodes::BeginOutputAttribute(gate.getInputs()[0]);
         ImGui::Text("Output");
         ImNodes::EndOutputAttribute();
 
@@ -184,7 +212,7 @@ int main(int, char **) {
     // Create window with SDL_Renderer graphics context
     Uint32 window_flags =
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
-    SDL_Window *window = SDL_CreateWindow("MuxHub", 1600, 980, window_flags);
+    SDL_Window *window = SDL_CreateWindow("TestSim", 1600, 980, window_flags);
 
     if (window == nullptr) {
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
@@ -216,10 +244,12 @@ int main(int, char **) {
     // Setup style
     // ImGui::StyleColorsDark();
     ImGuiStyle &style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.082f, 0.082f, 0.082f, 1.0f);          // Inactive title background
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.16f, 0.16f, 0.16f, 1.0f);       // Active title background
+    style.Colors[ImGuiCol_TitleBg] =
+        ImVec4(0.082f, 0.082f, 0.082f, 1.0f); // Inactive title background
+    style.Colors[ImGuiCol_TitleBgActive] =
+        ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // Active title background
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.14f, 0.04f, 0.94f, 0.9f);
-    
+
     // Setup Platform/Renderer backends
     ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer3_Init(renderer);
@@ -227,13 +257,17 @@ int main(int, char **) {
     // Initialize ImNodes
     ImNodes::CreateContext();
     ImNodes::StyleColorsDark();
-    
-    ImNodes::GetStyle().Colors[ImNodesCol_GridBackground] = ImColor(0.082f, 0.082f, 0.082f, 1.0f);  // grid background color
-    ImNodes::GetStyle().Colors[ImNodesCol_GridLine] = ImColor(0.176f, 0.176f, 0.176f, 0.5f);        // grid color
+
+    ImNodes::GetStyle().Colors[ImNodesCol_GridBackground] =
+        ImColor(0.137f, 0.137f, 0.137f, 1.0f); // grid background color
+    ImNodes::GetStyle().Colors[ImNodesCol_GridLine] =
+        ImColor(0.176f, 0.176f, 0.176f, 0.5f); // grid color
 
     // Create some initial nodes for the demo
     CreateNode(0.5f, ImVec2(500, 200));
     CreateNode(1.0f, ImVec2(800, 350));
+
+    CreateGate({600, 300});
 
     // Our state
     ImVec4 clear_color = ImVec4(0.082f, 0.082f, 0.082f, 1.00f);
@@ -276,7 +310,7 @@ int main(int, char **) {
                 links.clear();
             }
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+            ImGui::Text("Application average %.1f ms/frame\n (%.1f FPS)",
                         1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }

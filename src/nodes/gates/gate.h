@@ -9,13 +9,16 @@ class Gate {
   protected:
     int idGate;
     int numInputs;
-    std::vector<std::bitset<3>> inputs;
+    std::vector<int> inputs;
     std::string label;
     ImVec2 pos;
 
   public:
-    Gate(int idGate, int nInputs, std::vector<std::bitset<3>> inputs,
+    Gate(int idGate, int nInputs, std::vector<int> inputs,
          const std::string &label, ImVec2 pos);
+
+    Gate();
+
     virtual ~Gate() = default;
 
     virtual std::bitset<3> process(std::bitset<3>) = 0;
@@ -29,8 +32,8 @@ class Gate {
     void setNumInputs(int numInputs) { this->numInputs = numInputs; }
 
     // inputs
-    std::vector<std::bitset<3>> getInputs() { return inputs; }
-    // void setInputs(int nInputs) { this->nInputs = nInputs; }
+    std::vector<int> getInputs() { return inputs; }
+    void addInput(int attr_id) { inputs.push_back(attr_id); }
 
     // label
     std::string getLabel() { return label; }

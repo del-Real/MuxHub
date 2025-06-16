@@ -1,6 +1,6 @@
 #include "and_gate.h"
 
-AndGate::AndGate(int idGate, int nInputs, std::vector<std::bitset<3>> inputs,
+AndGate::AndGate(int idGate, int nInputs, std::vector<int> inputs,
                  const std::string &label, ImVec2 pos)
     : Gate(idGate, nInputs, inputs, label, pos) {
     if (nInputs < 2) {
