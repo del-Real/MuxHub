@@ -1,13 +1,14 @@
-#include "../lib/imgui/backend/include/imgui_impl_sdl3.h"
-#include "../lib/imgui/backend/include/imgui_impl_sdlrenderer3.h"
-#include "../lib/imgui/include/imgui.h"
-#include "../lib/imnodes/include/imnodes.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
+#include "imgui.h"
+#include "imnodes.h"
 #include <SDL3/SDL.h>
 
 #include <bitset>
 #include <stdio.h>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 #include "nodes/gates/and_gate.h"
 #include "nodes/gates/not_gate.h"
@@ -85,7 +86,7 @@ void ShowNodeEditor() {
     }
 
     // Render existing nodes
-    for (auto &node_pair : nodes) {
+    for (auto &node_pair: nodes) {
         Node &node = node_pair.second;
 
         // Set node position if it's a new node
@@ -118,7 +119,7 @@ void ShowNodeEditor() {
         ImNodes::EndNode();
     }
 
-    for (auto &gate_pair : gates) {
+    for (auto &gate_pair: gates) {
         NotGate &gate = gate_pair.second;
 
         // Set node position if it's a new node
@@ -145,7 +146,7 @@ void ShowNodeEditor() {
     }
 
     // Render links between nodes
-    for (const Link &link : links) {
+    for (const Link &link: links) {
         ImNodes::Link(link.id, link.start_attr, link.end_attr);
     }
 
@@ -156,7 +157,7 @@ void ShowNodeEditor() {
     if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
         // Check if the link already exists
         bool link_exists = false;
-        for (const Link &link : links) {
+        for (const Link &link: links) {
             if ((link.start_attr == start_attr && link.end_attr == end_attr) ||
                 (link.start_attr == end_attr && link.end_attr == start_attr)) {
                 link_exists = true;
@@ -185,7 +186,7 @@ void ShowNodeEditor() {
     }
 
     // Update node positions
-    for (auto &node_pair : nodes) {
+    for (auto &node_pair: nodes) {
         Node &node = node_pair.second;
         node.pos = ImNodes::GetNodeScreenSpacePos(node.id);
     }
@@ -194,7 +195,6 @@ void ShowNodeEditor() {
 }
 
 int main(int, char **) {
-
     //    NotGate nott(12, 1, "not1", {0, 1});
     //    nott.printGate();
     //    std::cout << std::endl;
@@ -211,7 +211,7 @@ int main(int, char **) {
 
     // Create window with SDL_Renderer graphics context
     Uint32 window_flags =
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
     SDL_Window *window = SDL_CreateWindow("TestSim", 1600, 980, window_flags);
 
     if (window == nullptr) {
@@ -235,8 +235,8 @@ int main(int, char **) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    io.Fonts->AddFontFromFileTTF("/System/Library/Fonts/Helvetica.ttc", 16.0f);
+    (void) io;
+    //io.Fonts->AddFontFromFileTTF("/System/Library/Fonts/Helvetica.ttc", 16.0f);
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -245,9 +245,9 @@ int main(int, char **) {
     // ImGui::StyleColorsDark();
     ImGuiStyle &style = ImGui::GetStyle();
     style.Colors[ImGuiCol_TitleBg] =
-        ImVec4(0.082f, 0.082f, 0.082f, 1.0f); // Inactive title background
+            ImVec4(0.082f, 0.082f, 0.082f, 1.0f); // Inactive title background
     style.Colors[ImGuiCol_TitleBgActive] =
-        ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // Active title background
+            ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // Active title background
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.14f, 0.04f, 0.94f, 0.9f);
 
     // Setup Platform/Renderer backends
@@ -259,9 +259,9 @@ int main(int, char **) {
     ImNodes::StyleColorsDark();
 
     ImNodes::GetStyle().Colors[ImNodesCol_GridBackground] =
-        ImColor(0.137f, 0.137f, 0.137f, 1.0f); // grid background color
+            ImColor(0.137f, 0.137f, 0.137f, 1.0f); // grid background color
     ImNodes::GetStyle().Colors[ImNodesCol_GridLine] =
-        ImColor(0.176f, 0.176f, 0.176f, 0.5f); // grid color
+            ImColor(0.176f, 0.176f, 0.176f, 0.5f); // grid color
 
     // Create some initial nodes for the demo
     CreateNode(0.5f, ImVec2(500, 200));

@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include <iostream>
 #include <string>
+#include <vector>
+#include <bitset>
 
 class Gate {
 
