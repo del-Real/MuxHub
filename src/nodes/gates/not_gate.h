@@ -2,12 +2,11 @@
 #include "gate.h"
 
 class NotGate : public Gate {
+public:
+    NotGate(int idNode, const std::string &label, int dataBits, std::vector<int> inputs,
+            std::vector<int> outputs, int orientation, ImVec2 pos);
 
-  public:
-    NotGate(int idGate, int nInputs, std::vector<int> inputs,
-            const std::string &label, ImVec2 pos);
+    virtual ~NotGate() = default;
 
-    NotGate();
-    
-    std::bitset<3> process(std::bitset<3> input) override;
+    std::bitset<3> evaluate(const std::bitset<3> &input) override;
 };

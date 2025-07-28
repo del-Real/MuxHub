@@ -253,6 +253,12 @@ set(MUXHUB_SOURCES
         src/nodes/gates/gate.cpp
         src/nodes/gates/and_gate.cpp
         src/nodes/gates/not_gate.cpp
+        src/nodes/io/constant.cpp
+        src/nodes/io/constant.h
+        src/nodes/io/output.cpp
+        src/nodes/io/output.h
+        src/nodes/node.cpp
+        src/nodes/node.h
         # Add other gate implementations as they're completed
         # src/nodes/gates/or_gate.cpp
         # src/nodes/gates/nand_gate.cpp

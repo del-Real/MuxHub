@@ -1,50 +1,33 @@
 #pragma once
 
-#include "imgui.h"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <bitset>
+#include "../node.h"
 
-class Gate {
-
-  protected:
-    int idGate;
-    int numInputs;
+class Gate : public Node {
+protected:
+    int dataBits;
     std::vector<int> inputs;
-    std::string label;
-    ImVec2 pos;
+    std::vector<int> outputs;
 
-  public:
-    Gate(int idGate, int nInputs, std::vector<int> inputs,
-         const std::string &label, ImVec2 pos);
-
-    Gate();
+public:
+    Gate(int idNode, const std::string &label, int dataBits,
+         std::vector<int> inputs, std::vector<int> outputs, int orientation, ImVec2 pos);
 
     virtual ~Gate() = default;
 
-    virtual std::bitset<3> process(std::bitset<3>) = 0;
+    virtual std::bitset<3> evaluate(const std::bitset<3> &input) = 0;
 
-    // idGate
-    int getIdGate() { return idGate; }
-    void setIdGate(int idGate) { this->idGate = idGate; }
-
-    // nInputs
-    int getNumInputs() { return numInputs; }
-    void setNumInputs(int numInputs) { this->numInputs = numInputs; }
+    // dataBits
+    int getDataBits() const { return dataBits; }
+    void setDataBits(int dataBits) { this->dataBits = dataBits; }
 
     // inputs
-    std::vector<int> getInputs() { return inputs; }
+    const std::vector<int> &getInputs() const { return inputs; }
     void addInput(int attr_id) { inputs.push_back(attr_id); }
 
-    // label
-    std::string getLabel() { return label; }
-    void setLabel(std::string label) { this->label = label; }
+    // outputs
+    const std::vector<int> &getOutputs() const { return outputs; }
+    void addOutput(int attr_id) { outputs.push_back(attr_id); }
 
-    // pos
-    ImVec2 getPos() { return pos; }
-    void setPos(ImVec2 pos) { this->pos = pos; }
-
-    // Debug print
-    void printGate();
+    // (Debug) print gate
+    void printGate() const;
 };

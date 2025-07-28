@@ -1,12 +1,12 @@
 #include "not_gate.h"
 
-NotGate::NotGate(int idGate, int nInputs, std::vector<int> inputs, const std::string &label, ImVec2 pos)
-    : Gate(idGate, 1, inputs, label, pos) {}
+// Constructor
+NotGate::NotGate(int idNode, const std::string &label, int dataBits, std::vector<int> inputs,
+                 std::vector<int> outputs, int orientation, ImVec2 pos)
+    : Gate(idNode, label, dataBits, inputs, outputs, orientation, pos) {
+}
 
-NotGate::NotGate(){}
-
-// Bitwise NOT
-std::bitset<3> NotGate::process(std::bitset<3> input) {
-    std::bitset<3> output(~input);
-    return output;
+// Bitwise NOT operation
+std::bitset<3> NotGate::evaluate(const std::bitset<3> &input) {
+    return ~input;
 }

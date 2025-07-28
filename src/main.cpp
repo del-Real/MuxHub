@@ -9,18 +9,11 @@
 #include <unordered_map>
 #include <vector>
 #include <algorithm>
+#include <memory>
 
-#include "nodes/gates/and_gate.h"
+#include "nodes/node.h"
+#include "nodes/gates/gate.h"
 #include "nodes/gates/not_gate.h"
-
-// Simple node graph structure
-struct Node {
-    int id;
-    float value;
-    ImVec2 pos;
-    std::vector<int> inputs;
-    std::vector<int> outputs;
-};
 
 struct Link {
     int id;
@@ -35,33 +28,28 @@ static int next_node_id = 1;
 static int next_link_id = 1;
 static int next_attr_id = 1;
 
-// Creates a node helper function
-int CreateNode(float value, ImVec2 pos) {
-    int id = next_node_id++;
-    Node &node = nodes[id];
-    node.id = id;
-    node.value = value;
-    node.pos = pos;
-
-    // Create input/output attributes
-    node.inputs.push_back(next_attr_id++);
-    node.outputs.push_back(next_attr_id++);
-
-    return id;
-}
-
-static std::unordered_map<int, NotGate> gates;
+static std::unordered_map<int, std::unique_ptr<Gate>> gates;
 
 int CreateGate(ImVec2 pos) {
     int id = next_node_id++;
-    NotGate &notGat = gates[id];
-    notGat.setIdGate(id);
-    notGat.setPos(pos);
-    notGat.setLabel("ss");
 
-    // Create input/output attributes
-    notGat.addInput(next_attr_id++);
-    // notGat.outputs.push_back(next_attr_id++);
+    // Create the NotGate with proper constructor arguments
+    gates[id] = std::make_unique<NotGate>(
+        id,                    // idNode
+        "Gate",                  // label
+        1,                     // dataBits
+        std::vector<int>{},    // inputs (empty initially)
+        std::vector<int>{},    // outputs (empty initially)
+        0,                     // orientation
+        pos                    // position
+    );
+
+    // Get reference to work with it
+    Gate& gate = *gates[id];
+
+    // Add input/output attributes
+    gate.addInput(next_attr_id++);
+    gate.addOutput(next_attr_id++);
 
     return id;
 }
@@ -85,65 +73,43 @@ void ShowNodeEditor() {
         ImGui::EndPopup();
     }
 
-    // Render existing nodes
-    for (auto &node_pair: nodes) {
-        Node &node = node_pair.second;
+    for (auto &gate_pair: gates) {
+        Gate &gate = *gate_pair.second;  // Dereference the unique_ptr to get Gate&
 
         // Set node position if it's a new node
-        ImNodes::SetNodeScreenSpacePos(node.id, node.pos);
+        ImNodes::SetNodeScreenSpacePos(gate.getIdNode(), gate.getPos());
 
         // Begin rendering the node
-        ImNodes::BeginNode(node.id);
+        ImNodes::BeginNode(gate.getIdNode());
 
         ImNodes::BeginNodeTitleBar();
-        ImGui::TextUnformatted("Node");
+        ImGui::TextUnformatted(gate.getLabel().c_str());  // Show actual gate label
         ImNodes::EndNodeTitleBar();
 
-        // Input attribute
-        ImNodes::BeginInputAttribute(node.inputs[0]);
-        ImGui::Text("Input");
-        ImNodes::EndInputAttribute();
+        // Input attribute (check if inputs exist)
+        if (!gate.getInputs().empty()) {
+            ImNodes::BeginInputAttribute(gate.getInputs()[0]);
+            ImGui::Text("Input");
+            ImNodes::EndInputAttribute();
+        }
 
-        // Node content
         ImGui::Spacing();
-        ImGui::PushItemWidth(120.0f);
-        ImGui::DragFloat("Value", &node.value, 0.01f);
+        ImGui::PushItemWidth(200.0f);
+        // You can add gate-specific controls here if needed
+        ImGui::Text("Data Bits: %d", gate.getDataBits());
         ImGui::PopItemWidth();
         ImGui::Spacing();
 
-        // Output attribute
-        ImNodes::BeginOutputAttribute(node.outputs[0]);
-        ImGui::Text("Output");
-        ImNodes::EndOutputAttribute();
+        // Output attribute (check if outputs exist)
+        if (!gate.getOutputs().empty()) {
+            ImNodes::BeginOutputAttribute(gate.getOutputs()[0]);
+            ImGui::Text("Output");
+            ImNodes::EndOutputAttribute();
+        }
 
         ImNodes::EndNode();
     }
 
-    for (auto &gate_pair: gates) {
-        NotGate &gate = gate_pair.second;
-
-        // Set node position if it's a new node
-        ImNodes::SetNodeScreenSpacePos(gate.getIdGate(), gate.getPos());
-
-        // Begin rendering the node
-        ImNodes::BeginNode(gate.getIdGate());
-
-        ImNodes::BeginNodeTitleBar();
-        ImGui::TextUnformatted("Gate");
-        ImNodes::EndNodeTitleBar();
-
-        // Input attribute
-        ImNodes::BeginInputAttribute(gate.getInputs()[0]);
-        ImGui::Text("Input");
-        ImNodes::EndInputAttribute();
-
-        // Output attribute
-        ImNodes::BeginOutputAttribute(gate.getInputs()[0]);
-        ImGui::Text("Output");
-        ImNodes::EndOutputAttribute();
-
-        ImNodes::EndNode();
-    }
 
     // Render links between nodes
     for (const Link &link: links) {
@@ -185,24 +151,15 @@ void ShowNodeEditor() {
         }
     }
 
-    // Update node positions
-    for (auto &node_pair: nodes) {
-        Node &node = node_pair.second;
-        node.pos = ImNodes::GetNodeScreenSpacePos(node.id);
+    for (auto &gate_pair: gates) {
+        Gate &gate = *gate_pair.second;  // Dereference the unique_ptr
+        gate.setPos(ImNodes::GetNodeScreenSpacePos(gate.getIdNode()));
     }
 
     ImGui::End();
 }
 
 int main(int, char **) {
-    //    NotGate nott(12, 1, "not1", {0, 1});
-    //    nott.printGate();
-    //    std::cout << std::endl;
-    //    AndGate andd(13, 2, "and1", {0, 0});
-    //    andd.printGate();
-    //
-    //    std::cout << nott.process(6) << std::endl;
-
     // Setup SDL
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -237,7 +194,7 @@ int main(int, char **) {
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
     //io.Fonts->AddFontFromFileTTF("/System/Library/Fonts/Helvetica.ttc", 16.0f);
-
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
@@ -263,18 +220,14 @@ int main(int, char **) {
     ImNodes::GetStyle().Colors[ImNodesCol_GridLine] =
             ImColor(0.176f, 0.176f, 0.176f, 0.5f); // grid color
 
-    // Create some initial nodes for the demo
-    CreateNode(0.5f, ImVec2(500, 200));
-    CreateNode(1.0f, ImVec2(800, 350));
-
-    CreateGate({600, 300});
+    CreateGate({600, 600});
 
     // Our state
     ImVec4 clear_color = ImVec4(0.082f, 0.082f, 0.082f, 1.00f);
 
-    // ---------
+    // ==========================================================
     // Main loop
-    // ---------
+    // ==========================================================
     bool done = false;
     while (!done) {
         SDL_Event event;
@@ -299,6 +252,8 @@ int main(int, char **) {
         // Show ImNodes editor
         ShowNodeEditor();
 
+        bool show_demo_window = true;
+        ImGui::ShowDemoWindow(&show_demo_window);
         // Show ImGui UI for controls
         {
             ImGui::Begin("Controls");
@@ -312,6 +267,16 @@ int main(int, char **) {
 
             ImGui::Text("Application average %.1f ms/frame\n (%.1f FPS)",
                         1000.0f / io.Framerate, io.Framerate);
+            ImGui::End();
+        } {
+            ImGui::Begin("Gates");
+            ImGui::Text("NOT OR AND");
+
+            ImGui::End();
+        } {
+            ImGui::Begin("IO");
+            ImGui::Text("1 0");
+
             ImGui::End();
         }
 
