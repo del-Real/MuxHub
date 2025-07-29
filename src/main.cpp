@@ -28,35 +28,267 @@ static int next_node_id = 1;
 static int next_link_id = 1;
 static int next_attr_id = 1;
 
-static std::unordered_map<int, std::unique_ptr<Gate>> gates;
+static std::unordered_map<int, std::unique_ptr<Gate> > gates;
 
+// UI state
+static bool show_demo_window = true;
+static bool show_about_window = true;
+static bool show_io_window = true;
+static bool show_gates_window = true;
+static bool show_plexers_window = true;
+static bool show_arithmetic_window = true;
+static bool show_memory_window = true;
+
+// Create gate node
 int CreateGate(ImVec2 pos) {
     int id = next_node_id++;
 
-    // Create the NotGate with proper constructor arguments
+    // Create the NotGate constructor arguments
     gates[id] = std::make_unique<NotGate>(
-        id,                    // idNode
-        "Gate",                  // label
-        1,                     // dataBits
-        std::vector<int>{},    // inputs (empty initially)
-        std::vector<int>{},    // outputs (empty initially)
-        0,                     // orientation
-        pos                    // position
+        id, // idNode
+        "Gate", // label
+        1, // dataBits
+        std::vector<int>{}, // inputs (empty initially)
+        std::vector<int>{}, // outputs (empty initially)
+        0, // orientation
+        pos // position
     );
 
     // Get reference to work with it
-    Gate& gate = *gates[id];
+    Gate &gate = *gates[id];
 
     // Add input/output attributes
-    gate.addInput(next_attr_id++);
-    gate.addOutput(next_attr_id++);
+    gate.add_input(next_attr_id++);
+    gate.add_output(next_attr_id++);
 
     return id;
 }
 
+// ----------------------------------------------------------
+// Menu Bar
+// ----------------------------------------------------------
+void ShowMenuBar() {
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("New", "Ctrl+N")) {
+                // Clear all nodes and links
+                gates.clear();
+                links.clear();
+                next_node_id = 1;
+                next_link_id = 1;
+                next_attr_id = 1;
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Open", "Ctrl+O")) {
+                // TODO: Implement file opening
+            }
+            if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                // TODO: Implement file saving
+            }
+            if (ImGui::MenuItem("Save As", "Ctrl+Shift+S")) {
+                // TODO: Implement save as
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Export", "Ctrl+E")) {
+                // TODO: Implement export functionality
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Exit", "Alt+F4")) {
+                // TODO: Set exit flag
+            }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Edit")) {
+            if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
+                // TODO: Implement undo
+            }
+            if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
+                // TODO: Implement redo
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Cut", "Ctrl+X")) {
+                // TODO: Implement cut
+            }
+            if (ImGui::MenuItem("Copy", "Ctrl+C")) {
+                // TODO: Implement copy
+            }
+            if (ImGui::MenuItem("Paste", "Ctrl+V")) {
+                // TODO: Implement paste
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Select All", "Ctrl+A")) {
+                // TODO: Implement select all
+            }
+            if (ImGui::MenuItem("Delete", "Delete")) {
+                // TODO: Implement delete selected
+            }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("View")) {
+            ImGui::MenuItem("I/O Panel", nullptr, &show_io_window);
+            ImGui::MenuItem("Gates Panel", nullptr, &show_gates_window);
+            ImGui::MenuItem("Plexers Panel", nullptr, &show_plexers_window);
+            ImGui::MenuItem("Arithmetic Panel", nullptr, &show_arithmetic_window);
+            ImGui::MenuItem("Memory Panel", nullptr, &show_memory_window);
+            ImGui::Separator();
+            if (ImGui::MenuItem("Reset Layout")) {
+                // Reset all window positions and sizes
+                show_io_window = true;
+                show_gates_window = true;
+                show_plexers_window = true;
+                show_arithmetic_window = true;
+                show_memory_window = true;
+            }
+            ImGui::Separator();
+            ImGui::MenuItem("ImGui Demo", nullptr, &show_demo_window);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Tools")) {
+            if (ImGui::MenuItem("Simulate", "F5")) {
+                // TODO: Start simulation
+            }
+            if (ImGui::MenuItem("Stop Simulation", "Shift+F5")) {
+                // TODO: Stop simulation
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Validate Circuit", "F7")) {
+                // TODO: Validate circuit logic
+            }
+            if (ImGui::MenuItem("Optimize Circuit")) {
+                // TODO: Circuit optimization
+            }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Help")) {
+            if (ImGui::MenuItem("About", nullptr, &show_about_window)) {
+                show_about_window = true;
+            }
+            if (ImGui::MenuItem("User Guide")) {
+                // TODO: Open user guide
+            }
+            if (ImGui::MenuItem("Keyboard Shortcuts")) {
+                // TODO: Show shortcuts window
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+}
+
+// ----------------------------------------------------------
+// About Window
+// ----------------------------------------------------------
+void ShowAboutWindow() {
+    if (!show_about_window) return;
+
+    // Center the about window on screen
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    // Create window flags for no title bar and auto-resize
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize |
+                                    ImGuiWindowFlags_NoDecoration |
+                                    ImGuiWindowFlags_NoMove;
+
+    // Push rounded window styling
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 12.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(30.0f, 20.0f));
+
+    // Optional: Add a subtle border color
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+    ImGui::Begin("About MuxHub", &show_about_window, window_flags);
+
+    // Check if user clicked outside the window
+    if (!ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
+        show_about_window = false;
+    }
+
+    // Main content area
+    ImGui::BeginGroup();
+    {
+        // Left side - Logo placeholder
+        ImGui::BeginGroup();
+        {
+            ImGui::Text("MUX");
+            ImGui::Text("HUB");
+            ImGui::Spacing();
+            ImGui::Text("Made by:");
+            ImGui::Text("Alberto del Real");
+        }
+        ImGui::EndGroup();
+
+        ImGui::SameLine();
+        ImGui::Spacing();
+        ImGui::SameLine();
+
+        // Right side - Menu items with rounded buttons
+        ImGui::BeginGroup();
+        {
+            // Push button rounding
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+
+            // Documentation button
+            if (ImGui::Button("Documentation", ImVec2(200, 35))) {
+                // TODO: Open documentation
+            }
+
+            // Source code button
+            if (ImGui::Button("Source code", ImVec2(200, 35))) {
+                // TODO: Open source code repository
+            }
+
+            // What's new button
+            if (ImGui::Button("What's new", ImVec2(200, 35))) {
+                // TODO: Show what's new
+            }
+
+            // Donate button with heart icon
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.4f, 1.0f));
+            if (ImGui::Button("Donate", ImVec2(200, 35))) {
+                // TODO: Open donation link
+            }
+            ImGui::PopStyleColor(2);
+
+            // Pop button rounding
+            ImGui::PopStyleVar();
+        }
+        ImGui::EndGroup();
+    }
+    ImGui::EndGroup();
+
+    // Version number - use a table or fixed positioning
+    ImGui::Spacing();
+    ImGui::BeginGroup();
+    {
+        ImGui::Dummy(ImVec2(260, 0)); // Create fixed width space
+        ImGui::SameLine();
+        ImGui::Text("1.0.0");
+    }
+    ImGui::EndGroup();
+
+    ImGui::End();
+
+    // Pop all styling
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(3);
+}
+
+// ----------------------------------------------------------
+// Node Editor
+// ----------------------------------------------------------
 void ShowNodeEditor() {
-    // Begin node editor
-    ImGui::Begin("Node Editor");
+ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+
+    // Begin node editor (no close button parameter since we have no title bar)
+    ImGui::Begin("Designer editor", nullptr, window_flags);
     ImNodes::BeginNodeEditor();
 
     // Right-click context menu for adding nodes
@@ -74,21 +306,21 @@ void ShowNodeEditor() {
     }
 
     for (auto &gate_pair: gates) {
-        Gate &gate = *gate_pair.second;  // Dereference the unique_ptr to get Gate&
+        Gate &gate = *gate_pair.second; // Dereference the unique_ptr to get Gate&
 
         // Set node position if it's a new node
-        ImNodes::SetNodeScreenSpacePos(gate.getIdNode(), gate.getPos());
+        ImNodes::SetNodeScreenSpacePos(gate.get_id_node(), gate.get_pos());
 
         // Begin rendering the node
-        ImNodes::BeginNode(gate.getIdNode());
+        ImNodes::BeginNode(gate.get_id_node());
 
         ImNodes::BeginNodeTitleBar();
-        ImGui::TextUnformatted(gate.getLabel().c_str());  // Show actual gate label
+        ImGui::TextUnformatted(gate.get_label().c_str()); // Show actual gate label
         ImNodes::EndNodeTitleBar();
 
         // Input attribute (check if inputs exist)
-        if (!gate.getInputs().empty()) {
-            ImNodes::BeginInputAttribute(gate.getInputs()[0]);
+        if (!gate.get_inputs().empty()) {
+            ImNodes::BeginInputAttribute(gate.get_inputs()[0]);
             ImGui::Text("Input");
             ImNodes::EndInputAttribute();
         }
@@ -96,13 +328,13 @@ void ShowNodeEditor() {
         ImGui::Spacing();
         ImGui::PushItemWidth(200.0f);
         // You can add gate-specific controls here if needed
-        ImGui::Text("Data Bits: %d", gate.getDataBits());
+        ImGui::Text("Data Bits: %d", gate.get_data_bits());
         ImGui::PopItemWidth();
         ImGui::Spacing();
 
         // Output attribute (check if outputs exist)
-        if (!gate.getOutputs().empty()) {
-            ImNodes::BeginOutputAttribute(gate.getOutputs()[0]);
+        if (!gate.get_outputs().empty()) {
+            ImNodes::BeginOutputAttribute(gate.get_outputs()[0]);
             ImGui::Text("Output");
             ImNodes::EndOutputAttribute();
         }
@@ -152,13 +384,16 @@ void ShowNodeEditor() {
     }
 
     for (auto &gate_pair: gates) {
-        Gate &gate = *gate_pair.second;  // Dereference the unique_ptr
-        gate.setPos(ImNodes::GetNodeScreenSpacePos(gate.getIdNode()));
+        Gate &gate = *gate_pair.second; // Dereference the unique_ptr
+        gate.set_pos(ImNodes::GetNodeScreenSpacePos(gate.get_id_node()));
     }
 
     ImGui::End();
 }
 
+// **********************************************************
+// MAIN
+// **********************************************************
 int main(int, char **) {
     // Setup SDL
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
@@ -193,7 +428,7 @@ int main(int, char **) {
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
-    //io.Fonts->AddFontFromFileTTF("/System/Library/Fonts/Helvetica.ttc", 16.0f);
+    io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/arial.ttf", 16.0f);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -220,13 +455,11 @@ int main(int, char **) {
     ImNodes::GetStyle().Colors[ImNodesCol_GridLine] =
             ImColor(0.176f, 0.176f, 0.176f, 0.5f); // grid color
 
-    CreateGate({600, 600});
-
     // Our state
     ImVec4 clear_color = ImVec4(0.082f, 0.082f, 0.082f, 1.00f);
 
     // ==========================================================
-    // Main loop
+    // MAIN LOOP
     // ==========================================================
     bool done = false;
     while (!done) {
@@ -249,34 +482,98 @@ int main(int, char **) {
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
+        // Create main dockspace
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);  // Use WorkPos instead of Pos
+        ImGui::SetNextWindowSize(viewport->WorkSize); // Use WorkSize instead of Size
+        ImGui::SetNextWindowViewport(viewport->ID);
+
+        // Correct window flags - remove NoDecoration and other problematic flags
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+        ImGui::Begin("Dockspace", nullptr, window_flags);  // Changed from dockspace_flags to window_flags
+        ImGui::PopStyleVar(3);
+
+        // Submit the DockSpace
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+            ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+            dockspace_flags |= (1 << 14); // ImGuiDockNodeFlags_NoWindowMenuButton
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+
+        // Show menu bar
+        ShowMenuBar();
+
+        ImGui::End();
+
         // Show ImNodes editor
         ShowNodeEditor();
 
-        bool show_demo_window = true;
-        ImGui::ShowDemoWindow(&show_demo_window);
-        // Show ImGui UI for controls
-        {
-            ImGui::Begin("Controls");
-            ImGui::Text("Right-click in the node editor to add nodes");
-            ImGui::Text("Connect outputs to inputs by dragging");
+        // Show about window if requested
+        ShowAboutWindow();
 
-            if (ImGui::Button("Clear All")) {
-                nodes.clear();
-                links.clear();
+        // Show demo window if requested
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow(&show_demo_window);
+        }
+
+        // IO nodes
+        if (show_io_window) {
+            ImGui::Begin("I/O", &show_io_window, ImGuiWindowFlags_NoCollapse);
+            if (ImGui::Button("Constant")) {
             }
 
-            ImGui::Text("Application average %.1f ms/frame\n (%.1f FPS)",
-                        1000.0f / io.Framerate, io.Framerate);
-            ImGui::End();
-        } {
-            ImGui::Begin("Gates");
-            ImGui::Text("NOT OR AND");
+            if (ImGui::Button("Output")) {
+            }
 
             ImGui::End();
-        } {
-            ImGui::Begin("IO");
-            ImGui::Text("1 0");
+        }
 
+        // Gates nodes
+        if (show_gates_window) {
+            ImGui::Begin("Gates", &show_gates_window);
+            static float padding = 300;
+            if (ImGui::Button("NOT Gate")) {
+                CreateGate({padding, padding});
+                padding += 10;
+
+                if (padding > 450) {
+                    padding = 300;
+                }
+            }
+
+            ImGui::End();
+        }
+
+        // Plexer nodes
+        if (show_plexers_window) {
+            ImGui::Begin("Plexers", &show_plexers_window);
+            if (ImGui::Button("MUX")) {
+            }
+            ImGui::End();
+        }
+
+        // Arithmetic nodes
+        if (show_arithmetic_window) {
+            ImGui::Begin("Arithmetic", &show_arithmetic_window);
+            if (ImGui::Button("Adder")) {
+            }
+            ImGui::End();
+        }
+
+        // Memory nodes
+        if (show_memory_window) {
+            ImGui::Begin("Memory", &show_memory_window);
+            if (ImGui::Button("JK")) {
+            }
             ImGui::End();
         }
 
