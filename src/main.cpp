@@ -200,7 +200,7 @@ void ShowAboutWindow() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(30.0f, 20.0f));
 
-    // Optional: Add a subtle border color
+    // Add a subtle border color
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
     ImGui::Begin("About MuxHub", &show_about_window, window_flags);
@@ -236,24 +236,27 @@ void ShowAboutWindow() {
 
             // Documentation button
             if (ImGui::Button("Documentation", ImVec2(200, 35))) {
-                // TODO: Open documentation
+                SDL_OpenURL("https://github.com/del-Real/MuxHub");
             }
 
             // Source code button
             if (ImGui::Button("Source code", ImVec2(200, 35))) {
-                // TODO: Open source code repository
+                SDL_OpenURL("https://github.com/del-Real/MuxHub");
+
             }
 
             // What's new button
             if (ImGui::Button("What's new", ImVec2(200, 35))) {
-                // TODO: Show what's new
+                SDL_OpenURL("https://github.com/del-Real/MuxHub");
+
             }
 
-            // Donate button with heart icon
+            // Donate button
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.3f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.4f, 1.0f));
             if (ImGui::Button("Donate", ImVec2(200, 35))) {
-                // TODO: Open donation link
+                SDL_OpenURL("https://github.com/del-Real/MuxHub");
+
             }
             ImGui::PopStyleColor(2);
 
@@ -287,7 +290,7 @@ void ShowAboutWindow() {
 void ShowNodeEditor() {
 ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
 
-    // Begin node editor (no close button parameter since we have no title bar)
+    // Begin node editor (no close button)
     ImGui::Begin("Designer editor", nullptr, window_flags);
     ImNodes::BeginNodeEditor();
 
@@ -299,7 +302,6 @@ ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
     if (ImGui::BeginPopup("NodesContextMenu")) {
         ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
         if (ImGui::MenuItem("Add Node")) {
-            // CreateNode(0.0f, click_pos);
             CreateGate(click_pos);
         }
         ImGui::EndPopup();
@@ -327,7 +329,6 @@ ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
 
         ImGui::Spacing();
         ImGui::PushItemWidth(200.0f);
-        // You can add gate-specific controls here if needed
         ImGui::Text("Data Bits: %d", gate.get_data_bits());
         ImGui::PopItemWidth();
         ImGui::Spacing();
@@ -401,7 +402,7 @@ int main(int, char **) {
         return -1;
     }
 
-    // Create window with SDL_Renderer graphics context
+    // Create window with SDL_Renderer context
     Uint32 window_flags =
             SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
     SDL_Window *window = SDL_CreateWindow("MuxHub", 1600, 980, window_flags);
@@ -484,11 +485,11 @@ int main(int, char **) {
 
         // Create main dockspace
         ImGuiViewport *viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);  // Use WorkPos instead of Pos
-        ImGui::SetNextWindowSize(viewport->WorkSize); // Use WorkSize instead of Size
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
 
-        // Correct window flags - remove NoDecoration and other problematic flags
+        // Window flags
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
@@ -500,7 +501,7 @@ int main(int, char **) {
         ImGui::Begin("Dockspace", nullptr, window_flags);  // Changed from dockspace_flags to window_flags
         ImGui::PopStyleVar(3);
 
-        // Submit the DockSpace
+        // Submit the dockspace
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
             ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -517,7 +518,7 @@ int main(int, char **) {
         // Show ImNodes editor
         ShowNodeEditor();
 
-        // Show about window if requested
+        // Show about window
         ShowAboutWindow();
 
         // Show demo window if requested
@@ -539,18 +540,24 @@ int main(int, char **) {
 
         // Gates nodes
         if (show_gates_window) {
-            ImGui::Begin("Gates", &show_gates_window);
+            ImGui::PushStyleColor(ImGuiCol_Tab, ImVec4(0.984f, 0.325f, 0.325f, 0.8f));
+            ImGui::PushStyleColor(ImGuiCol_TabSelected, ImVec4(0.984f, 0.325f, 0.325f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_TabHovered, ImVec4(1.0f, 0.4f, 0.4f, 1.0f));
+
+            ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+            ImGui::Begin("Gates", &show_gates_window, flags);
+
             static float padding = 300;
             if (ImGui::Button("NOT Gate")) {
                 CreateGate({padding, padding});
                 padding += 10;
-
                 if (padding > 450) {
                     padding = 300;
                 }
             }
-
             ImGui::End();
+
+            ImGui::PopStyleColor(3);
         }
 
         // Plexer nodes
