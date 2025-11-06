@@ -3,7 +3,7 @@
 
 Gate::Gate(int id_node, const std::string &label, int data_bits,
            std::vector<int> inputs, std::vector<int> outputs, int orientation, ImVec2 pos)
-    : Node(id_node, label, orientation, pos), data_bits(data_bits), inputs(inputs), outputs(outputs) {
+    : Node(id_node, label, data_bits, inputs, outputs, orientation, pos) {
 }
 
 void Gate::print_gate() const {
@@ -15,10 +15,14 @@ void Gate::print_gate() const {
     // Convert orientation enum to string for display
     std::string orient_str;
     switch (get_orientation()) {
-        case Orientation::UP:    orient_str = "UP ↑"; break;
-        case Orientation::RIGHT: orient_str = "RIGHT →"; break;
-        case Orientation::DOWN:  orient_str = "DOWN ↓"; break;
-        case Orientation::LEFT:  orient_str = "LEFT ←"; break;
+        case Orientation::UP: orient_str = "UP ↑";
+            break;
+        case Orientation::RIGHT: orient_str = "RIGHT →";
+            break;
+        case Orientation::DOWN: orient_str = "DOWN ↓";
+            break;
+        case Orientation::LEFT: orient_str = "LEFT ←";
+            break;
     }
     std::cout << "Orientation: " << orient_str << std::endl;
     std::cout << "Position: (" << get_pos().x << ", " << get_pos().y << ")" << std::endl;

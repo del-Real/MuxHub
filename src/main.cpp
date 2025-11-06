@@ -211,11 +211,9 @@ void ShowAboutWindow() {
     }
 
     // Main content area
-    ImGui::BeginGroup();
-    {
+    ImGui::BeginGroup(); {
         // Left side - Logo placeholder
-        ImGui::BeginGroup();
-        {
+        ImGui::BeginGroup(); {
             ImGui::Text("MUX");
             ImGui::Text("HUB");
             ImGui::Spacing();
@@ -229,8 +227,7 @@ void ShowAboutWindow() {
         ImGui::SameLine();
 
         // Right side - Menu items with rounded buttons
-        ImGui::BeginGroup();
-        {
+        ImGui::BeginGroup(); {
             // Push button rounding
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
 
@@ -242,13 +239,11 @@ void ShowAboutWindow() {
             // Source code button
             if (ImGui::Button("Source code", ImVec2(200, 35))) {
                 SDL_OpenURL("https://github.com/del-Real/MuxHub");
-
             }
 
             // What's new button
             if (ImGui::Button("What's new", ImVec2(200, 35))) {
                 SDL_OpenURL("https://github.com/del-Real/MuxHub");
-
             }
 
             // Donate button
@@ -256,7 +251,6 @@ void ShowAboutWindow() {
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.4f, 1.0f));
             if (ImGui::Button("Donate", ImVec2(200, 35))) {
                 SDL_OpenURL("https://github.com/del-Real/MuxHub");
-
             }
             ImGui::PopStyleColor(2);
 
@@ -269,8 +263,7 @@ void ShowAboutWindow() {
 
     // Version number - use a table or fixed positioning
     ImGui::Spacing();
-    ImGui::BeginGroup();
-    {
+    ImGui::BeginGroup(); {
         ImGui::Dummy(ImVec2(260, 0)); // Create fixed width space
         ImGui::SameLine();
         ImGui::Text("1.0.0");
@@ -288,7 +281,7 @@ void ShowAboutWindow() {
 // Node Editor
 // ----------------------------------------------------------
 void ShowNodeEditor() {
-ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
 
     // Begin node editor (no close button)
     ImGui::Begin("Designer editor", nullptr, window_flags);
@@ -429,7 +422,7 @@ int main(int, char **) {
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
-    io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/arial.ttf", 16.0f);
+    io.Fonts->AddFontFromFileTTF("../../resources/font/InterRegular.ttf", 16.0f);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -491,18 +484,19 @@ int main(int, char **) {
 
         // Window flags
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-        ImGui::Begin("Dockspace", nullptr, window_flags);  // Changed from dockspace_flags to window_flags
+        ImGui::Begin("Dockspace", nullptr, window_flags); // Changed from dockspace_flags to window_flags
         ImGui::PopStyleVar(3);
 
         // Submit the dockspace
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
             ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
             dockspace_flags |= (1 << 14); // ImGuiDockNodeFlags_NoWindowMenuButton

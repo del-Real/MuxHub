@@ -13,6 +13,12 @@ endif()
 
 if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
+    execute_process(
+            COMMAND xcrun --sdk macosx --show-sdk-path
+            OUTPUT_VARIABLE SDK_PATH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(CMAKE_OSX_SYSROOT "${SDK_PATH}")
 endif()
 
 # Find SDL3 - try different methods

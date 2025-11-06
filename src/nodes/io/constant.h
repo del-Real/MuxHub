@@ -4,9 +4,7 @@
 
 class Constant : public Node {
 protected:
-    int data_bits;
     std::bitset<3> value;
-    std::vector<int> outputs;
 
 public:
     Constant(int id_node, const std::string &label, int data_bits,

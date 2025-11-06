@@ -17,11 +17,15 @@ class Node {
 protected:
     int id_node;
     std::string label;
+    int data_bits;
+    std::vector<int> inputs;
+    std::vector<int> outputs;
     Orientation orientation;
     ImVec2 pos;
 
 public:
-    Node(int id_node, std::string label, int orientation, ImVec2 pos);
+    Node(int id_node, std::string label, int data_bits, std::vector<int> inputs, std::vector<int> outputs,
+         int orientation, ImVec2 pos);
 
     virtual ~Node() = default;
 
@@ -32,6 +36,18 @@ public:
     // label
     std::string get_label() const { return label; }
     void set_label(std::string label) { this->label = label; }
+
+    // dataBits
+    int get_data_bits() const { return data_bits; }
+    void set_data_bits(int data_bits) { this->data_bits = data_bits; }
+
+    // inputs
+    const std::vector<int> &get_inputs() const { return inputs; }
+    void add_input(int attr_id) { inputs.push_back(attr_id); }
+
+    // outputs
+    const std::vector<int> &get_outputs() const { return outputs; }
+    void add_output(int attr_id) { outputs.push_back(attr_id); }
 
     // orientation
     Orientation get_orientation() const { return orientation; }
