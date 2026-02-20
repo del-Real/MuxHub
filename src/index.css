@@ -1,0 +1,72 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: #000;
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ----- COMPONENTS STYLES ----- */
+
+.components-panel {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  height: 100%;
+  width: 13vw;
+  z-index: 1;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ----- PROPERTIES STYLES ----- */
+
+.properties-panel {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  height: 100%;
+  width: 13vw;
+  right: 0;
+  z-index: 1;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ----- VIEWPORT STYLES ----- */
+
+.react-flow__panel.right {
+  right: 13%;
+}
+
+/* ----- RESPONSIVE ----- */
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+}
