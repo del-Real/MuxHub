@@ -1,36 +1,18 @@
 import { useState, useCallback } from "react";
-import {
-  ReactFlow,
-  Controls,
-  Background,
-  Position,
-  Handle,
-  addEdge,
-  applyNodeChanges,
-  applyEdgeChanges,
-  type Node,
-  type Edge,
-  type FitViewOptions,
-  type OnConnect,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type DefaultEdgeOptions,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
+import { Position, type Node, type Edge } from "@xyflow/react";
+import Viewport from "./Components/Viewport.tsx";
+import ComponentsPanel from "./Components/ComponentsPanel.tsx";
+import PropertiesPanel from "./Components/PropertiesPanel.tsx";
 
-import TextUpdaterNode from "./TextUpdaterNode.tsx";
-
-const styles = {
-  height: "100%",
-  width: "100%",
-};
+let id = 6;
+const getId = () => `${id++}`;
 
 const nodeDefaults = {
   sourcePosition: Position.Right,
   targetPosition: Position.Left,
 };
 
-const initialNodes = [
+const initialNodes: Node[] = [
   {
     id: "1",
     position: { x: 0, y: 150 },
@@ -55,74 +37,47 @@ const initialNodes = [
     data: { label: "nn4" },
     ...nodeDefaults,
   },
-];
-
-const initialEdges = [
   {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    animated: true,
-  },
-  {
-    id: "e1-3",
-    source: "1",
-    target: "3",
-  },
-  {
-    id: "e1-4",
-    source: "1",
-    target: "4",
+    id: "5",
+    position: { x: 350, y: 600 },
+    data: {},
+    type: "TestNode",
+    ...nodeDefaults,
   },
 ];
 
-const fitViewOptions: FitViewOptions = {
-  padding: 0.2,
-};
+const initialEdges: Edge[] = [
+  { id: "e1-2", source: "1", target: "2", animated: true },
+  { id: "e1-3", source: "1", target: "3" },
+  { id: "e1-4", source: "1", target: "4" },
+];
 
-const defaultEdgeOptions: DefaultEdgeOptions = {
-  animated: true,
-};
-
-const proOptions = { hideAttribution: true };
-const nodeTypes = { textUpdater: TextUpdaterNode };
-
-function Viewport() {
+function App() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [],
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [],
-  );
-  const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
-    [],
-  );
+  const addNode = useCallback(() => {
+    const newNode: Node = {
+      id: getId(),
+      position: { x: Math.random() * 400, y: Math.random() * 400 },
+      data: { label: `Node ${id - 1}` },
+      ...nodeDefaults,
+    };
+    setNodes((prev) => [...prev, newNode]);
+  }, []);
 
   return (
-    <div style={styles}>
-      <ReactFlow
+    <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      <ComponentsPanel onAddNode={addNode} />
+      <Viewport
         nodes={nodes}
+        setNodes={setNodes}
         edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-        fitViewOptions={fitViewOptions}
-        defaultEdgeOptions={defaultEdgeOptions}
-        proOptions={proOptions}
-      >
-        <Background />
-        <Controls position="bottom-right" style={{ right: "13%" }} />
-      </ReactFlow>
+        setEdges={setEdges}
+      />
+      <PropertiesPanel />
     </div>
   );
 }
 
-export default Viewport;
+export default App;

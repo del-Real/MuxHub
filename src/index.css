@@ -34,12 +34,16 @@ body,
 .components-panel {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  height: 100%;
-  width: 13vw;
-  z-index: 1;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
+  color: #fff;
+  height: 99.2%;
+  width: 13vw;
+  margin-top: 4px;
+  margin-left: 3px;
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 1;
 }
 
 /* ----- PROPERTIES STYLES ----- */
@@ -47,13 +51,17 @@ body,
 .properties-panel {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  height: 100%;
-  width: 13vw;
-  right: 0;
-  z-index: 1;
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
+  color: #fff;
+  height: 99.2%;
+  width: 13vw;
+  right: 0;
+  margin-top: 4px;
+  margin-right: 3px;
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 1;
 }
 
 /* ----- VIEWPORT STYLES ----- */
