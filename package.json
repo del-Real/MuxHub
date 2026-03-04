@@ -2,7 +2,6 @@
   "name": "muxhub",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"tsc -p tsconfig.electron.json --watch\" \"npm:electron\"",
@@ -39,6 +38,15 @@
   },
   "build": {
     "appId": "com.muxhub.app",
+    "linux": {
+      "target": "AppImage"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
     "files": [
       "dist",
       "dist-electron"

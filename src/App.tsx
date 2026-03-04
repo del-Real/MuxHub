@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import { Position, type Node, type Edge } from "@xyflow/react";
-import Viewport from "./Components/Viewport.tsx";
-import ComponentsPanel from "./Components/ComponentsPanel.tsx";
-import PropertiesPanel from "./Components/PropertiesPanel.tsx";
+import Viewport from "./components/Viewport.tsx";
+import ComponentsPanel from "./components/ComponentsPanel.tsx";
+import PropertiesPanel from "./components/PropertiesPanel.tsx";
 
 let id = 6;
 const getId = () => `${id++}`;
@@ -52,6 +52,8 @@ const initialEdges: Edge[] = [
   { id: "e1-4", source: "1", target: "4" },
 ];
 
+const styles = { display: "flex", width: "100vw", height: "100vh" };
+
 function App() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
@@ -67,7 +69,7 @@ function App() {
   }, []);
 
   return (
-    <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+    <div style={styles}>
       <ComponentsPanel onAddNode={addNode} />
       <Viewport
         nodes={nodes}

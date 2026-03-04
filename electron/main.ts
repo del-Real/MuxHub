@@ -1,10 +1,7 @@
 import { app, BrowserWindow } from "electron";
-import { fileURLToPath } from "url";
 import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// Remove the import.meta.url workaround — __dirname works natively in CommonJS
 const isDev = process.env.NODE_ENV === "development";
 
 function createWindow() {
